@@ -1,18 +1,26 @@
-import { Scene, Mesh, PerspectiveCamera, WebGLRenderer, BoxGeometry, MeshBasicMaterial } from 'three';
+import { Scene, Mesh, SRGBColorSpace, OrthographicCamera, WebGLRenderer, PlaneGeometry, MeshBasicMaterial, TextureLoader } from 'three';
 
 const scene = new Scene();
-const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new OrthographicCamera(0, 1, 1, 0, 1, 1000);
 const renderer = new WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-const geometry = new BoxGeometry(1, 1, 1);
-const material = new MeshBasicMaterial({ color: 0x00ff00 });
+const geometry = new PlaneGeometry();
+
+const textureLoader = new TextureLoader();
+const puzzle = textureLoader.load('images/puzzle.jpg');
+puzzle.colorSpace = SRGBColorSpace;
+
+const material = new MeshBasicMaterial({ map: puzzle });
+
 const cube = new Mesh(geometry, material);
+
+cube.position.x = 0.5;
+cube.position.y = 0.5;
 scene.add(cube);
 
 camera.position.z = 5;
-
 
 window.addEventListener( 'resize', ()=>{
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -21,10 +29,7 @@ window.addEventListener( 'resize', ()=>{
     renderer.setSize( window.innerWidth, window.innerHeight );
 }, false );
 
-
 function animate() {
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
 
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
